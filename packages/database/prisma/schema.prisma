@@ -20,8 +20,85 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+  // Better Auth Plugins
+  // username         String?   @unique
+  // displayEmail     String?
+  // twoFactorEnabled Boolean   @default(false)
+
+  // Relations
+  // members     Member[]
+  // invitations Invitation[]
+  // passkeys    Passkey[]
+  // twoFactors  TwoFactor[]
+
   @@map("users")
 }
+
+// model Organization {
+//   id          String       @id
+//   name        String
+//   slug        String?      @unique
+//   logo        String?
+//   createdAt   DateTime     @default(now())
+//   metadata    String?
+//   members     Member[]
+//   invitations Invitation[]
+
+//   @@map("organization")
+// }
+
+// model Member {
+//   id             String       @id
+//   organizationId String
+//   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+//   userId         String
+//   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   role           String
+//   createdAt      DateTime     @default(now())
+
+//   @@map("member")
+// }
+
+// model Invitation {
+//   id             String       @id
+//   organizationId String
+//   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+//   email          String
+//   role           String?
+//   status         String
+//   expiresAt      DateTime
+//   inviterId      String
+//   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+//   @@map("invitation")
+// }
+
+// model Passkey {
+//   id           String   @id
+//   name         String?
+//   publicKey    String
+//   userId       String
+//   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   credentialID String
+//   counter      Int
+//   deviceType   String
+//   backedUp     Boolean
+//   transports   String?
+//   createdAt    DateTime @default(now())
+
+//   @@map("passkey")
+// }
+
+// model TwoFactor {
+//   id          String   @id
+//   secret      String
+//   backupCodes String
+//   userId      String
+//   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+//   createdAt   DateTime @default(now())
+
+//   @@map("two_factor")
+// }
 
 model Session {
   id        String   @id
@@ -33,6 +110,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // activeOrganizationId String?
 
   @@unique([token])
   @@index([userId])
@@ -55,6 +134,7 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  // @@unique([providerId, accountId])
   @@index([userId])
   @@map("account")
 }

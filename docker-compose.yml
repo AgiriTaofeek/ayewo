@@ -1,27 +1,27 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: start_elysia_postgres
+    container_name: ayewo_postgres
     restart: always
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: start_elysia_db
+      POSTGRES_DB: ayewo_db
     ports:
       - "5432:5432"
     volumes:
-      - start_elysia_pgdata:/var/lib/postgresql/data
+      - ayewo_pgdata:/var/lib/postgresql/data
 
   api:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
-    container_name: start_elysia_api
+    container_name: ayewo_api
     restart: always
     env_file:
       - apps/api/.env
     environment:
-      DATABASE_URL: postgresql://postgres:password@postgres:5432/start_elysia_db?schema=public
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/ayewo_db?schema=public
       PORT: 4000
       NODE_ENV: production
       # Add other required API env vars here
@@ -34,7 +34,7 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
-    container_name: start_elysia_web
+    container_name: ayewo_web
     restart: always
     env_file:
       - apps/web/.env
@@ -48,4 +48,4 @@ services:
       - api
 
 volumes:
-  start_elysia_pgdata:
+  ayewo_pgdata:

@@ -14,16 +14,19 @@
 				"VITE_BETTER_AUTH_URL"
 			],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],
-			"outputs": ["dist/**"]
+			"outputs": ["dist/**", ".next/**", "!.next/cache/**"]
 		},
 		"lint": {
-			"env": ["SKIP_ENV_VALIDATION"]
+			"env": ["SKIP_ENV_VALIDATION"],
+			"outputs": []
 		},
 		"format": {
-			"env": ["SKIP_ENV_VALIDATION"]
+			"env": ["SKIP_ENV_VALIDATION"],
+			"outputs": []
 		},
 		"check-types": {
-			"dependsOn": ["^check-types"]
+			"dependsOn": ["^check-types"],
+			"outputs": []
 		},
 		"dev": {
 			"persistent": true,
@@ -32,12 +35,16 @@
 		"db:push": {
 			"cache": false,
 			"env": ["DATABASE_URL"],
-			"inputs": ["$TURBO_DEFAULT$", ".env*"]
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": []
 		},
 		"generate": {
 			"dependsOn": ["^build"],
 			"env": ["SKIP_ENV_VALIDATION"],
-			"outputs": ["node_modules/.prisma/client/**"]
+			"outputs": [
+				"node_modules/@prisma/client/**",
+				"../../node_modules/.prisma/client/**"
+			]
 		},
 		"studio": {
 			"persistent": true,

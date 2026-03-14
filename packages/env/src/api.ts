@@ -10,10 +10,23 @@ export const apiEnv = createEnv({
 			.default("development"),
 		BETTER_AUTH_SECRET: z.string().min(1),
 		BETTER_AUTH_URL: z.string().url(),
+		FRONTEND_URL: z.string().url(),
+		GOOGLE_CLIENT_ID: z.string().optional(),
+		GOOGLE_CLIENT_SECRET: z.string().optional(),
+		GITHUB_CLIENT_ID: z.string().optional(),
+		GITHUB_CLIENT_SECRET: z.string().optional(),
 	},
 	runtimeEnv: process.env,
 	emptyStringAsUndefined: true,
+	onValidationError: (error) => {
+		console.error(
+			"❌ Invalid API environment variables:",
+			error.flatten().fieldErrors,
+		);
+		throw new Error("Invalid environment variables");
+	},
 	skipValidation:
+		typeof window !== "undefined" ||
 		!!process.env.SKIP_ENV_VALIDATION ||
 		process.env.NODE_ENV === "test" ||
 		!!process.env.CI,

@@ -1,4 +1,4 @@
-import { webEnv } from "@repo/env";
+import { webEnv } from "@repo/env/web";
 
 /**
  * Re-export validated environment variables for the web app.

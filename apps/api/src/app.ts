@@ -2,19 +2,21 @@ import cors from "@elysiajs/cors";
 import { opentelemetry } from "@elysiajs/opentelemetry";
 import swagger from "@elysiajs/swagger";
 import { Elysia } from "elysia";
-
+import { helmet } from "elysia-helmet";
 import { rateLimit } from "elysia-rate-limit";
-
 import { env } from "./env";
-import { auth } from "./lib/auth";
-import { healthRoutes } from "./routes/health";
-
-// Standard Elysia handler for Better Auth
-function betterAuthHandler(context: { request: Request }) {
-	return auth.handler(context.request);
-}
+import { v1Module } from "./modules/v1";
+import { loggerPlugin } from "./plugins/logger";
+import { requestIdPlugin } from "./plugins/request-id";
 
 export const app = new Elysia()
+	.use(
+		helmet({
+			contentSecurityPolicy: process.env.NODE_ENV === "production",
+		}),
+	)
+	.use(requestIdPlugin)
+	.use(loggerPlugin)
 	.use(
 		rateLimit({
 			max: 100, // max 100 requests per minute per IP
@@ -23,24 +25,15 @@ export const app = new Elysia()
 	)
 	.use(
 		cors({
-			origin: env.BETTER_AUTH_URL,
+			origin: [env.FRONTEND_URL, env.BETTER_AUTH_URL],
 			credentials: true,
 		}),
 	)
 	.use(opentelemetry())
-	.use(
-		swagger({
-			documentation: {
-				info: { title: "start-elysia-monorepo API", version: "1.0.0" },
-			},
-		}),
-	)
 	.onError(({ error, code }) => {
 		if (code === "NOT_FOUND") return { error: "Not Found" };
 		console.error(error);
 	})
-	.use(healthRoutes)
-	// Mount Better Auth to handle all /api/auth/* requests
-	.all("/api/auth/*", betterAuthHandler);
+	.use(v1Module);
 
 export type App = typeof app;
